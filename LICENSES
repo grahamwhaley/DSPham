@@ -1,0 +1,53 @@
+Code in this project is derived from many sources, under numerous licenses. All licences are
+of an open or permissive nature.
+Original source not identified below or not containing its own obvious license is released under
+the GPL v3, details of which can be found in the LICENSE file.
+
+Code obtained from the following projects came under the specified licenses:
+
+# $19 DSP Filter project
+
+ - dynamicFilters.cpp
+ - morseDecode.cpp
+
+From the [$19 dsp filter project](https://github.com/gi1mic/19Dollar-DSP-Filter). MIT licensed.
+
+# Teensy Convolution SDR code
+
+ - fir.cpp
+ - LMS_NR.cpp
+ - nb.cpp
+ - nr_kim.cpp
+ - spectral.cpp
+ - xanr.cpp
+
+From the [Teensy Convolusion SDR project](github.com/DD4WH/Teensy-ConvolutionSDR). Under GPLv3
+
+# ik8yfw.cpp
+
+From the [RadioDSP-Stm32f103 project](https://github.com/gcallipo/RadioDSP-Stm32f103).
+Under the Creative Commons - Attribution 3.0 license
+
+# k4icy.cpp
+
+Morce decoder from http://k4icy.com/cw_decoder.html .
+Listed as open source and free to modify, with attribution. See source file for precise wording.
+
+# tf3lj.cpp
+
+Morse decoder taken from https://sites.google.com/site/lofturj/cwreceive
+License: GPLv3
+
+# menu.cpp
+
+Example taken from https://github.com/neu-rah/ArduinoMenu/
+Licensed under LGPL 2.1+
+
+# Project original code
+
+ morseGen.cpp
+ global.cpp
+ lcd.cpp
+ USB_to_headphones.ino
+
+Licensed under GPLv3
