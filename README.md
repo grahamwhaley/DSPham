@@ -22,6 +22,8 @@ coding up my own.
 As an added bonus, the CW decoders tend to be better than the one built into my transceiver, and auto
 detect key speed.
 
+An expanded list of [Features can be found below](#features).
+
 ## Honorable mentions
 
 Here I should say, this project is 'built on the shoulders of giants'. All the technically challenging
@@ -87,9 +89,60 @@ Later it may be necessary or desirable to move to a decimated datapath, for reas
 
 ### Display
 
+The display has two 'modes'. The default mode is to show the current status/setup, and if a decoder
+is active, then to display the output of the decoder.
+
+The top line of the display shows either the name of the current settings slot, or the output of the
+active decoder.
+
+The bottom line shows status information. The following table summarises the bottom line:
+
+
+```
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|0|1|2|3|4|5|6|7|8|9|0|1|2|3|4|5|
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|v|F|N|N|A| |NR   | |C P U|C|W  |
+|o|i|B|o|G| | | | | | | | |W|P  |
+|l|l|l|t|C| | | | | | | | |T|M  |
+|u|t|a|c| | | | | | | | | |u| | |
+|m|e|n|h| | | | | | | | | |n| | |
+|e|r|k| | | | | | | | | | |e| | |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
 ### Menu system
 
+The menu system is entered by clicking the rotary shaft encoder, and navigated with rotates and
+clicks of the encoder. It is exited by using the `Back` menu items within the menu itself. The
+menu is hierachical. Exiting the top level menu takes you back to the status display.
+
+The following top level menus are available:
+
+- Volume
+- NR menu
+- Decoder menu
+- Filter menu
+- AGC menu
+- Settings menu
+
 ### Settings
+
+The unit stores 11 'slots' of settings in the eeprom. The first six of these slots are initialised
+with some defaults:
+
+- 0: FM - Wide band FM filter, notch and nb on, spectral NR.
+- 1: AM - Wide band AM filter, notch and nb on, spectral NR.
+- 2: OFF - Everything off (no processing).
+- 3: SG5K - Everything off apart from hardware SG5k AGC.
+- 4: SSB - Medium band SSB filter, notch and nb on, spectral NR.
+- 5: CW - Narrow band CW filter, notch off, nb on. No NR. K4ICY cw decoder.
+
+All eeprom slots can be edited, modified and saved. The defaults can be restored if necessary.
+
+One interesting feature of the 'settings' menu, due to the limited number of inputs, is you need
+to select the slot you wish to name/reset/save before you perform the action. Thus, first set the
+slot number you wish to edit, and then make your edits/saves/resets etc.
 
 ## Feature list
 
@@ -147,8 +200,17 @@ being injected into my system, and had to shield the case, add isolation and fer
 importantly* was to add a good set of smoothing and filtering capacitors to the 7805 PSU. Do not skimp
 on that, as I learnt.
 
+## Bugs, features, patches etc.
+
 If you do build one of these, and have any questions etc., feel free to ask. Probably the best place
 to ask is via a GitHub Issue, as then we get a recorded history to help others in the future.
+
+If you want to contribute code and improvements, feel free! It might be an idea to ask me first though
+what I think, just in case that is a feature I've already tried, or am working on, or had already
+dismissed. No point duplicating work.
+
+All submissions should come via Github pull requests. Requests, bugs etc. should be reported via
+Github issues.
 
 [1]: https://github.com/DD4WH/Teensy-ConvolutionSDR "Teensy-ConvolutionSDR"
 [2]: https://github.com/df8oe/UHSDR "UHSDR"
