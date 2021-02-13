@@ -7,7 +7,7 @@
 This project is a DSP audio processor, aimed at the radio amateurs. It's key features include:
 
 - Multiple noise reduction algorithms
-- Multiple morce (CW) decoders
+- Multiple morse (CW) decoders
 - Auto-notch (tone) removal
 - Noise blanker (impulse) removal
 - Configurable bandpass filtering
@@ -62,8 +62,8 @@ I probably would have driven that in 4bit mode instead.
 ![Circuit diagram](./diagrams/DSPham_white.png)
 
 > *Note:* In the circuit diagram, the LCD type shown is incorrect - only because the package I used
-  did not have the Grove RGB LCD I2C in its library. You get the idea - there are only two data wires
-  going to the LCD (along with the two power connections).
+  to draw the diagram did not have the Grove RGB LCD I2C in its library. You get the idea - there
+  are only two data wires going to the LCD (along with the two power connections).
 
 ## Software architecture
 
@@ -79,9 +79,10 @@ A key feature, and a powerful feature of the audio library, is that inbetween th
 can, and do, apply other processing to the data flow, such as using the [ARM CMSIS][11] functions or
 open coding algorithms (as is done for some of the noise reduction code).
 
-Presently the whole flow runs at the native audio library 44.1kHz. This costs us processing and data
-bandwidth overhead, but gives us a little simplicity, skipping any decimation and interpolation steps.
-Later it may be necessary or desirable to move to a decimated datapath, for reasons including:
+Presently the whole flow runs at the native audio library sample rate of 44.1kHz. This costs us
+processing and data bandwidth overhead, but gives us a little simplicity, skipping any decimation
+and interpolation steps.  Later it may be necessary or desirable to move to a decimated datapath,
+for reasons including:
 
 - will take less processing time and data flow overheads
 - will give us better filtering (FIR filters for instance) for the same number of 'taps'
@@ -102,14 +103,16 @@ The bottom line shows status information. The following table summarises the bot
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |0|1|2|3|4|5|6|7|8|9|0|1|2|3|4|5|
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|v|F|N|N|A| |NR   | |C P U|C|W  |
-|o|i|B|o|G| | | | | | | | |W|P  |
-|l|l|l|t|C| | | | | | | | |T|M  |
-|u|t|a|c| | | | | | | | | |u| | |
-|m|e|n|h| | | | | | | | | |n| | |
-|e|r|k| | | | | | | | | | |e| | |
+|S|F|N|N|A| |NR   | |C P U|C|W  |
+|i|i|B|o|G| | | | | | | | |W|P  |
+|g|l|l|t|C| | | | | | | | |T|M  |
+|n|t|a|c| | | | | | | | | |u| | |
+|a|e|n|h| | | | | | | | | |n| | |
+|l|r|k| | | | | | | | | | |e| | |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
+
+the LED flashes in sync with CW tone detection.
 
 ### Menu system
 
@@ -138,7 +141,8 @@ with some defaults:
 - 4: SSB - Medium band SSB filter, notch and nb on, spectral NR.
 - 5: CW - Narrow band CW filter, notch off, nb on. No NR. K4ICY cw decoder.
 
-All eeprom slots can be edited, modified and saved. The defaults can be restored if necessary.
+All eeprom slots can be edited, modified and saved. The defaults can be restored if necessary,
+on either a slot by slot or full system basis.
 
 One interesting feature of the 'settings' menu, due to the limited number of inputs, is you need
 to select the slot you wish to name/reset/save before you perform the action. Thus, first set the
@@ -146,10 +150,10 @@ slot number you wish to edit, and then make your edits/saves/resets etc.
 
 ## Feature list
 
-The followin features are in the current code:
+The following features are in the current code:
 
   - A selection of noise reduction algorithms, including:
-    - Least Means Square
+    - Least Means Square and Leaky Least Means Square
     - Exponential smoothing moving filter
     - Average smoothing moving filter
     - Spectral noise reduction, with a choice of algorithms
@@ -172,6 +176,7 @@ The followin features are in the current code:
   - line and headphone out
   - 11 user configurable setting memories, 6 pre-loaded with defaults
   - menu driven configuration via rotary click encoder
+  - Quick mode/setting selection through rotary encoder
 
 ## Building and Development
 
@@ -192,6 +197,10 @@ project you will need a few extra libraries and to configure your Teensy 4.0 boa
 That should give you the correct setup and libraries to build and program the project. The most common
 mistake I make is to not set up the correct 'USB Type' for the Teensy audio shield support, which tends
 to end in errors such as `Audio.h not found` etc.
+
+If you are developing/improving/testing new features, then the ability to feed audio via the USB
+port is very useful, allowing you to develop without needing a rig wired up or running, and allowing
+you to feed the same audio time and again to make comparisions easier.
 
 ## Birdies!
 
