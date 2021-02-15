@@ -315,3 +315,36 @@ void audioFilter(short h[], const int &N, const int &TYPE, const int &WINDOW, co
                   break;
   }                  
 }
+
+//Additions from Graham
+// The filters come out with some attenuation - too much for my linking.
+// If we can measure the gain at the requested bandpass, then we can scale
+// the coefficients to actual 0db (neutral, no gain or attenuation) for the
+// chosen frequency, which should, ideally, be the peak of the filter.
+//
+// Gain is the root of the sum of the squares of cos and sin waves. Don't ask me for
+// the theory!!!
+float32_t getFilterGain(int16_t *coeffs, int ncoeffs, float32_t frequency, float32_t samplerate) {
+  float32_t cgain=0.0, sgain=0.0;
+  float32_t gain = 0.0;
+  float32_t f = frequency / samplerate;
+
+  for(int i=0; i<ncoeffs; i++ ) {
+    float32_t c = cos(2.0 * M_PI * f * i);
+    float32_t s = sin(2.0 * M_PI * f * i);
+
+    cgain += ((float32_t)coeffs[i]/32768.0) * c;
+    sgain += ((float32_t)coeffs[i]/32768.0) * s;
+  }
+
+  gain = (cgain*cgain) + (sgain*sgain);
+
+  //FIXME - we probably should limit the gain returned somewhere - possibly here.
+  return (sqrt(gain));
+}
+
+void normaliseCoeffs(int16_t *coeffs, int ncoeffs, float32_t multiplier) {
+  for( int i=0; i<ncoeffs; i++ ) {
+    coeffs[i] *= multiplier;
+  }
+}
