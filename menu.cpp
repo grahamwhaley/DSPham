@@ -122,13 +122,33 @@ double filter_freqhi;
 double filter_freqlo;
 
 void updateFilter() {
+  int ncoeff = filterList[current_filter_mode].coeff;
+  float32_t centref = (filterList[current_filter_mode].freqLow + filterList[current_filter_mode].freqHigh) / 2.0;
+  const float32_t maxgain = 2.0;
+  float32_t gain;
+  
   audioFilter(fir_active1,
-    filterList[current_filter_mode].coeff,
+    ncoeff,
     filterList[current_filter_mode].filterType,
     filterList[current_filter_mode].window,
     filterList[current_filter_mode].freqLow,
     filterList[current_filter_mode].freqHigh );
-  firfilter.begin(fir_active1, filterList[current_filter_mode].coeff);
+
+  gain = getFilterGain(fir_active1, ncoeff, centref, SAMPLE_RATE/(uint32_t)DF);
+
+  //For CW filters at least, we get a tiny gain - requiring a multiplication factor of
+  // ~167 in some cases for instance - and this seems to make the FIR filter then just generate
+  // hiss and noise, even when fed no signal.
+  // Thus, try limiting the max 'gain' to something 'sensible'. Well, OK, I'd like it so we never
+  // need to apply any gain to the FIR coefficients in the first place, but that is not what we seem
+  // to get from the FIR dynamic calculators.
+  if (1.0/gain > maxgain) gain = 1.0/maxgain;
+
+  //And scale it so we try not to be at 100% for a pure signal, to try and avoid
+  // any potential clipping (unlikely it is that we will ever end up in that situation).
+  normaliseCoeffs(fir_active1, ncoeff, 0.9/gain);
+
+  firfilter.begin(fir_active1, ncoeff);
 
   filter_freqlo = filterList[current_filter_mode].freqLow;
   filter_freqhi = filterList[current_filter_mode].freqHigh;

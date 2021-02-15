@@ -68,5 +68,8 @@ void wBlackman(double w[], const int &N);
 void wHanning(double w[], const int &N);
 void wHamming(double w[], const int &N);
 
+// Helper functions to normalise FIR coefficients for maximum gain.
+extern float32_t getFilterGain(int16_t *coeffs, int ncoeffs, float32_t frequency, float32_t samplerate);
+extern void normaliseCoeffs(int16_t *coeffs, int ncoeffs, float32_t multiplier);
 
 #endif
