@@ -19,8 +19,9 @@
 
 #define BUFFER_SIZE 128
 
-// Run with no decimation, at 44.1KHz..
-#define DF 1
+// Decimate down to 11kHz - see if that helps the NR systems perform, as they will then not be trying
+// to operate on the 5-20kHz data, which we never listen to anyway!
+#define DF 4
 
 #define FFT_L 512
 #define FFT_length FFT_L

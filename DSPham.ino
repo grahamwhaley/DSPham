@@ -87,29 +87,25 @@ AudioConnection          patchCord14(Q_out_R, 0, morse_fft, 0);    //Should we d
 
 AudioControlSGTL5000     sgtl5000_1;
 
-#define SAMPLE_RATE 44100.0
+#define SAMPLE_RATE ((float32_t)AUDIO_SAMPLE_RATE_EXACT)
 
-// number of FIR taps for decimation stages
-// DF1 decimation factor for first stage
-// DF2 decimation factor for second stage
-// see Lyons 2011 chapter 10.2 for the theory
-#define n_att  90.0
-#define n_samplerate (SAMPLE_RATE/1000)
-#define n_desired_BW 9.0
-#define n_fstop ( (n_samplerate / DF) - n_desired_BW)
-#define n_fpass (n_desired_BW / n_samplerate)
-
-#define n_dec_taps  (1 + (n_att / (22.0 * (n_fstop - n_fpass))))
+const float32_t n_samplerate = SAMPLE_RATE/1000.0; // samplerate before decimation
+const float32_t n_desired_BW = 5.0; // desired max BW of the filters
+const float32_t n_att = 90.0;
+const float32_t n_fstop = ( (n_samplerate / DF) - n_desired_BW) / n_samplerate;
+const float32_t n_fpass = n_desired_BW / n_samplerate;
+const uint16_t n_dec_taps = 1 + (uint16_t) (n_att / (22.0 * (n_fstop - n_fpass)));
+// interpolate taps must be divisible by decimation factor - so round up.
+const uint16_t n_int_taps = ((uint16_t)((n_dec_taps + DF) / DF)) * (uint16_t)DF;
+const uint16_t n_int_states = (AUDIO_BLOCK_SAMPLES * N_BLOCKS) + (n_int_taps / DF) -1;
 
 arm_fir_decimate_instance_f32 FIR_dec;
-float32_t DMAMEM FIR_dec_coeffs[(uint16_t)n_dec_taps];
-float32_t DMAMEM FIR_dec_state [(int)(n_dec_taps + BUFFER_SIZE * N_B - 1)];
+float32_t FIR_dec_coeffs[(uint16_t)n_dec_taps];
+float32_t FIR_dec_state [(int)(n_dec_taps + AUDIO_BLOCK_SAMPLES * N_BLOCKS - 1)];
 
-float32_t DMAMEM FIR_int_coeffs[32];
+float32_t FIR_int_coeffs[n_int_taps];
 arm_fir_interpolate_instance_f32 FIR_int;
-
-#define INT_STATE_SIZE (24 + BUFFER_SIZE * N_B / (uint32_t)DF - 1)
-float32_t DMAMEM FIR_int_state [INT_STATE_SIZE];
+float32_t FIR_int_state [n_int_states];
 
 // How much gain to apply to try and match the output 'volume' to the original
 // input volume.
@@ -157,22 +153,6 @@ void setup() {
   tf3lj_dec_init();
   menu_setup();
 
-  // We should work out why the taps is hard wired to 32 (48) here?? How is/should that be calculated!
-  // These are the FIR filters for the noise reduction
-  calc_FIR_coeffs (FIR_int_coeffs, 32, (float32_t)(n_desired_BW * 1000.0), n_att, 0, 0.0, n_samplerate*1000);
-  if (arm_fir_interpolate_init_f32(&FIR_int, (uint8_t)DF, 32, FIR_int_coeffs, FIR_int_state, BUFFER_SIZE * N_BLOCKS / (uint32_t)DF))
-  {
-    lcd.print("INT coeff fail");
-    while(1);
-  }
-
-  calc_FIR_coeffs (FIR_dec_coeffs, n_dec_taps, (float32_t)(n_desired_BW * 1000.0), n_att, 0, 0.0, SAMPLE_RATE);
-  if (arm_fir_decimate_init_f32(&FIR_dec, n_dec_taps, (uint32_t)DF , FIR_dec_coeffs, FIR_dec_state, BUFFER_SIZE * N_BLOCKS))
-  {
-    lcd.print("DEC coeff fail");
-    while(1);
-  }
-
   current_filter_mode = 0;
   updateFilter();
 
@@ -180,6 +160,20 @@ void setup() {
   //This also ensures we call the correct init routines before launch
   //into processing.
   load_specific_settings(get_default_slot());
+
+  calc_FIR_coeffs (FIR_dec_coeffs, n_dec_taps, (float32_t)(n_desired_BW * 1000.0), n_att, 0, 0.0, SAMPLE_RATE);
+  if (arm_fir_decimate_init_f32(&FIR_dec, n_dec_taps, (uint32_t)DF , FIR_dec_coeffs, FIR_dec_state, AUDIO_BLOCK_SAMPLES * N_BLOCKS))
+  {
+    Serial.print("DEC coeff fail");
+    while(1);
+  }
+
+  calc_FIR_coeffs (FIR_int_coeffs, n_int_taps, (float32_t)(n_desired_BW * 1000.0), n_att, 0, 0.0, SAMPLE_RATE);
+  if (arm_fir_interpolate_init_f32(&FIR_int, (uint8_t)DF, n_int_taps, FIR_int_coeffs, FIR_int_state, AUDIO_BLOCK_SAMPLES * N_BLOCKS / (uint32_t)DF))
+  {
+    Serial.print("INT coeff fail");
+    while(1);
+  }
 
   Q_in_L.begin();
   peak_ticktime = millis();   //wait one period before starting to do peak analysis
@@ -252,6 +246,11 @@ void loop() {
       Q_in_L.freeBuffer();
     }
 
+    //Decimate the data down before we process
+    // in-place does not seem to work for us?, so decimate into R, and copy back to L
+    arm_fir_decimate_f32(&FIR_dec, float_buffer_L, float_buffer_R, AUDIO_BLOCK_SAMPLES * N_BLOCKS);
+    memcpy(float_buffer_L, float_buffer_R, sizeof(float32_t) * BUFFER_SIZE * N_BLOCKS / (uint32_t)(DF));
+    
     if (nr_mode != NR_MODE_COMPLETE_BYPASS ) {
       if (nb_enabled ) {
         float32_t *Energy = 0;
@@ -326,7 +325,14 @@ void loop() {
       // the non-float data around for that.
       memcpy(float_buffer_R, float_buffer_L, sizeof(float32_t) * BUFFER_SIZE * N_BLOCKS / (uint32_t)(DF));
     }
-    
+
+    //Interpolate the data back up before we play
+    // R->L
+    arm_fir_interpolate_f32(&FIR_int, float_buffer_R, float_buffer_L, (AUDIO_BLOCK_SAMPLES * N_BLOCKS) / (uint32_t)(DF));
+    //And scale back up after interpolation. Hmm, should we be able to do this scale in the FIR filter itself ?
+    //** L -> upscale after decimate -> R **/
+    arm_scale_f32(float_buffer_L, DF, float_buffer_R, AUDIO_BLOCK_SAMPLES * N_BLOCKS);
+
     for (int i = 0; i < N_BLOCKS; i++)
     {
       outp = Q_out_R.getBuffer();
