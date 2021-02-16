@@ -22,7 +22,7 @@ coding up my own.
 As an added bonus, the CW decoders tend to be better than the one built into my transceiver, and auto
 detect key speed.
 
-An expanded list of [Features can be found below](#features).
+An expanded list of [Features can be found below](#feature-list).
 
 ## Honorable mentions
 
@@ -54,7 +54,7 @@ A [history of versions](#version-history) can be found at the end of this docume
 ## Hardware
 
 The basic hardware is built around a [Teensy 4.0][9] board along with its matching
-[audio daugthercard][10]. In addition to that there is a 2x16 screen, a single LED, a rotary click
+[audio daughtercard][10]. In addition to that there is a 2x16 screen, a single LED, a rotary click
 encoder and a switch to enter reprogramming mode. That's it. Pretty simple.
 
 ![Internal view](./photos/Internals.JPG)
