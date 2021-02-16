@@ -47,6 +47,10 @@ Honorable mentions then to:
 
 and many others.
 
+## Versions
+
+A [history of versions](#version-history) can be found at the end of this document.
+
 ## Hardware
 
 The basic hardware is built around a [Teensy 4.0][9] board along with its matching
@@ -79,14 +83,10 @@ A key feature, and a powerful feature of the audio library, is that inbetween th
 can, and do, apply other processing to the data flow, such as using the [ARM CMSIS][11] functions or
 open coding algorithms (as is done for some of the noise reduction code).
 
-Presently the whole flow runs at the native audio library sample rate of 44.1kHz. This costs us
-processing and data bandwidth overhead, but gives us a little simplicity, skipping any decimation
-and interpolation steps.  Later it may be necessary or desirable to move to a decimated datapath,
-for reasons including:
-
-- will take less processing time and data flow overheads
-- will give us better filtering (FIR filters for instance) for the same number of 'taps'
-- may improve the noise reduction, by allowing finer grained 'bins'
+From Version 1.1 the audio path is run with a decimation of 4, bringing the path down to 11kHz sample
+rate. Although this saves us processing overhead, the main goal was to 'focus' the noise reduction
+algorithms to process just the audio spectrum (0-5.5kHz), rather than trying to process the whole
+CD quality spectrum (0-22kHz), if we'd not decimated the native 44kHz sample rate.
 
 ### Display
 
@@ -220,6 +220,15 @@ dismissed. No point duplicating work.
 
 All submissions should come via Github pull requests. Requests, bugs etc. should be reported via
 Github issues.
+
+## Version History
+
+This section details the version 'releases', and what changed.
+
+| Version | Date       | Changes |
+| ------- | ---------- | ------- |
+| v1.0    | 2020-02-10 | Initial release |
+| v1.1    | 2020-02-16 | Normalise FIRs. Decimate audio x4 |
 
 [1]: https://github.com/DD4WH/Teensy-ConvolutionSDR "Teensy-ConvolutionSDR"
 [2]: https://github.com/df8oe/UHSDR "UHSDR"
