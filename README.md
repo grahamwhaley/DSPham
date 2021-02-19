@@ -194,6 +194,11 @@ project you will need a few extra libraries and to configure your Teensy 4.0 boa
     you need a version that is > v4.21.4 ?
 - Add the [Click Encoder library][18]. You may need to install this one from source.
 
+You also need to have *all* the sources, not just the `.ino` file, in a directory named `DSPham`. Note,
+if you downloaded a `zip` or `tar.gz` file from GitHub, then it will most likely have placed the
+source files in a subdirectory called `DSPham-master` or `DSPham-x.y` - I believe you **must**
+rename that directory to be just `DSPham` before you can build it with the Arduino IDE.
+
 That should give you the correct setup and libraries to build and program the project. The most common
 mistake I make is to not set up the correct 'USB Type' for the Teensy audio shield support, which tends
 to end in errors such as `Audio.h not found` etc.
