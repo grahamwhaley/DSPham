@@ -68,6 +68,18 @@ I probably would have driven that in 4bit mode instead.
 > *Note:* In the circuit diagram, the LCD type shown is incorrect - only because the package I used
   to draw the diagram did not have the Grove RGB LCD I2C in its library. You get the idea - there
   are only two data wires going to the LCD (along with the two power connections).
+  It should also be noted that, technically, the Grove RGB LCD is a 5V part, and the Teensy is
+  a 3V3 part, so having the Teensy driving the display is probably not guaranteed to work. It works
+  for me, but if you are purchasing anew you may wish to try and source a 3V3 tolerante display.
+  As long as the display is supported by the ["Arduino Menu"][17] system, and you can find enough
+  pins to wire it to the Teensy (there are a number spare I believe), then it should be easy to
+  modify the initialisation code to handle the new display. Do ask me if you need some help.
+
+> *Note:* The LED resistor value is calculated to limit the current drawn from the Teensy 4.0,
+  *depending on your chosen LED*. You may wish to re-calculate this value to suit your build,
+  or possibly even better add some sort of LED driver/transitor switch circuit to further reduce
+  the current draw from the Teensy. The Teensy 4.0 current draw, *total* for all pins, is
+  [specified as 10mA](https://www.pjrc.com/teensy/techspecs.html). Be careful.
 
 ## Software architecture
 
