@@ -81,6 +81,12 @@ I probably would have driven that in 4bit mode instead.
   the current draw from the Teensy. The Teensy 4.0 current draw, *total* for all pins, is
   [specified as 10mA](https://www.pjrc.com/teensy/techspecs.html). Be careful.
 
+> **Warning:** If you are going to power the Teensy from an external power supply (such as the 7805
+  I used), *and* you still want to be able to use or program over the USB port, then you **must**
+  snip a track on the Teensy board to separate the VIN and VUSB - see the
+  [Teensy 4.0 pinout diagram][20] for details. If you do not make the modification I believe you
+  are probably in danger of **frying** something.
+
 ## Software architecture
 
 The software is built using the Aruduino IDE along with the [Teensyduino][12] addon.
@@ -265,3 +271,4 @@ This section details the version 'releases', and what changed.
 [16]: https://github.com/neu-rah/ArduinoMenu "Arduino Menu"
 [17]: https://github.com/neu-rah/ArduinoMenu/pull/331 "RGB LCD menu support PR"
 [18]: https://github.com/soligen2010/encoder "ClickEncoder"
+[20]: https://www.pjrc.com/store/teensy40.html#pins "Teensy 4.0 pins"
