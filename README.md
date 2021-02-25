@@ -198,8 +198,12 @@ The following features are in the current code:
 
 ## Building and Development
 
-The project is built using the Arduino IDE with the [Teensyduino addon][12]. In order to build the
-project you will need a few extra libraries and to configure your Teensy 4.0 board correctly:
+The project is built using the Arduino IDE with the [Teensyduino addon][12]. To save everybody
+having to build the project from source, Pre-built binaries are provided in the
+[GitHub Releases][22], which can be burnt into the Teensy 4.0 using the [Teensy Loader][21].
+
+In order to build the project from sources, you will need a few extra libraries and to configure
+your Teensy 4.0 board correctly:
 
 - Set your Teensy 4.0 board up in the Arduino IDE as:
   - Teensy 4.0
@@ -272,3 +276,5 @@ This section details the version 'releases', and what changed.
 [17]: https://github.com/neu-rah/ArduinoMenu/pull/331 "RGB LCD menu support PR"
 [18]: https://github.com/soligen2010/encoder "ClickEncoder"
 [20]: https://www.pjrc.com/store/teensy40.html#pins "Teensy 4.0 pins"
+[21]: https://www.pjrc.com/teensy/loader.html "Teensy loader"
+[22]: https://github.com/grahamwhaley/DSPham/releases "github releases folder"
