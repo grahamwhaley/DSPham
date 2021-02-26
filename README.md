@@ -302,6 +302,26 @@ This section details the version 'releases', and what changed.
 | v1.0    | 2020-02-10 | Initial release |
 | v1.1    | 2020-02-16 | Normalise FIRs. Decimate audio x4 |
 
+## Samples
+
+So you can get some idea of the performance of the unit, I've recorded and uploaded a
+couple of samples. The samples were recoded off my Xiegu G90 transciever, from an ~43ft
+long wire strung out in a fairly noisy urban environment:
+
+1) The [20m whistle sample](./samples/20m_whistle.mp3) is an SSB conversation, with a constant
+tone whistle just inside its upper passband. The sample starts out for 10s in 'setting 2 - OFF',
+then moves to 'setting 3 - SG5K' for 10s, which is with the hardware AGC in the DSPham enabled.
+Then it moves to 'setting 4 - SSB', which has an SSB bandpass, notch and glitch filters, SG5K AGC
+and the Spectral noise reduction all enabled.
+
+2) The [VOLMET sample](./samples/volmet_5.mp3) is a recording of a
+[VOLMET weather broadcast](https://en.wikipedia.org/wiki/VOLMET) on 5.450MHz. It conviniently
+has some RTTY type interference in the background.
+The sample starts out for 10s in 'setting 2 - OFF',
+then moves to 'setting 3 - SG5K' for 10s, which is with the hardware AGC in the DSPham enabled.
+Then it moves to 'setting 4 - SSB', which has an SSB bandpass, notch and glitch filters, SG5K AGC
+and the Spectral noise reduction all enabled.
+
 [1]: https://github.com/DD4WH/Teensy-ConvolutionSDR "Teensy-ConvolutionSDR"
 [2]: https://github.com/df8oe/UHSDR "UHSDR"
 [3]: https://github.com/NR0V/wdsp "wdsp library"
