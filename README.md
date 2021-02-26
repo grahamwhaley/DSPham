@@ -61,7 +61,8 @@ encoder and a switch to enter reprogramming mode. That's it. Pretty simple.
 
 The heavy lifting is done by the Teensy and its audio card. I used an I2C based [Grove RGB LCD][13]
 merely as that is what I had to hand. If I'd had a standard HD44780 style 2x16 display to hand then
-I probably would have driven that in 4bit mode instead.
+I probably would have driven that in 4bit mode instead. See below for more on
+[hardware choices](#hardware-choices).
 
 ![Circuit diagram](./diagrams/DSPham_white.png)
 
@@ -81,11 +82,55 @@ I probably would have driven that in 4bit mode instead.
   the current draw from the Teensy. The Teensy 4.0 current draw, *total* for all pins, is
   [specified as 10mA](https://www.pjrc.com/teensy/techspecs.html). Be careful.
 
+> *Note:* The [rotary encoder I use - a KY-040][23], also requires a *+ve* connection, to the 3v3 line so it
+  can pull up some of its pins - that is *not shown on the schematic*, as the component diagram
+  did not have a pin for it - you most likely *will* need to wire *+ve* to your encoder. My
+  encoder only has 5 pins - *GND*, *+*, *SW*, *DT* and *CLK*. Wire them all up. Note also,
+  if you get the *DT* and *CLK* pins wired around the wrong way it will just make the rotary
+  encoder 'work backwards', e.g., go anticlockwise. You can either fix that by swapping the
+  wiring over, or modifying the software to tell it the pins are the other way around.
+
 > **Warning:** If you are going to power the Teensy from an external power supply (such as the 7805
   I used), *and* you still want to be able to use or program over the USB port, then you **must**
   snip a track on the Teensy board to separate the VIN and VUSB - see the
   [Teensy 4.0 pinout diagram][20] for details. If you do not make the modification I believe you
   are probably in danger of **frying** something.
+
+### Hardware choices
+
+I built my unit with the [Grove RGB LCD][13] and a [KY-040 rotary encoder][23]. Those were just
+what I had to hand or could get cheaply and easily - you may of course have other hardware to
+hand you wish to use. You will 'simply' have to modify the software setup to cater for the changes.
+
+For the LCD, that will involve modifying the [menu library][16] code found at the bottom of the
+[`menu.cpp`](./menu.cpp) file, such as:
+
+```cpp
+MENU_OUTPUTS(out,MAX_DEPTH
+  ,GROVERGBLCD_OUT(lcd, {0, 0, 16, 2})
+  ,NONE//must have 2 items at least
+);
+```
+
+See the [menu library web pages][16] for more details.
+
+For the encoder, hopefully it will work like most other rotary shaft encoders, and will 'just work',
+as long as you wire it up to the correct pins. But if not, you may need to modify the encoder and
+button code, both near the top of the [`menu.cpp`](./menu.cpp) code:
+
+```cpp
+#define encA 3
+#define encB 2
+#define encBtn 4
+ClickEncoder clickEncoder(encA,encB,encBtn,2);
+ClickEncoderStream encStream(clickEncoder,1);
+```
+
+and near the top of the [`DSPham.ino`](./DSPham.ino) file:
+
+```cpp
+Encoder enc1(3, 2);
+```
 
 ## Software architecture
 
@@ -278,3 +323,4 @@ This section details the version 'releases', and what changed.
 [20]: https://www.pjrc.com/store/teensy40.html#pins "Teensy 4.0 pins"
 [21]: https://www.pjrc.com/teensy/loader.html "Teensy loader"
 [22]: https://github.com/grahamwhaley/DSPham/releases "github releases folder"
+[23]: https://www.handsontec.com/dataspecs/module/Rotary%20Encoder.pdf "KY-040 rotary encoder"
