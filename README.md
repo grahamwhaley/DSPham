@@ -82,13 +82,13 @@ I probably would have driven that in 4bit mode instead. See below for more on
   the current draw from the Teensy. The Teensy 4.0 current draw, *total* for all pins, is
   [specified as 10mA](https://www.pjrc.com/teensy/techspecs.html). Be careful.
 
-> *Note:* The [rotary encoder I use - a KY-040][23], also requires a *+ve* connection, to the 3v3 line so it
-  can pull up some of its pins - that is *not shown on the schematic*, as the component diagram
-  did not have a pin for it - you most likely *will* need to wire *+ve* to your encoder. My
-  encoder only has 5 pins - *GND*, *+*, *SW*, *DT* and *CLK*. Wire them all up. Note also,
+> *Note:* The [rotary encoder I use - a KY-040][23] came on a module (pcb) that contained
+  some pullups. They are now depicted on the schematic. Hopefully if you have a different or
+  bare module this will help with the wiring up.
   if you get the *DT* and *CLK* pins wired around the wrong way it will just make the rotary
-  encoder 'work backwards', e.g., go anticlockwise. You can either fix that by swapping the
-  wiring over, or modifying the software to tell it the pins are the other way around.
+  encoder 'work backwards', e.g., go anticlockwise with respect to the menu system.
+  You can either fix that by swapping the wiring over, or modifying the software to tell it
+  the pins are the other way around.
 
 > **Warning:** If you are going to power the Teensy from an external power supply (such as the 7805
   I used), *and* you still want to be able to use or program over the USB port, then you **must**
@@ -131,6 +131,12 @@ and near the top of the [`DSPham.ino`](./DSPham.ino) file:
 ```cpp
 Encoder enc1(3, 2);
 ```
+
+You can both modify which pins the encoder is wired to, which way around the pins are wired
+(which effects clock/anti-clockwise rotation wrt to the menu). You may also need to change the
+number of clicks per detent for your chosen encoder - that can be changed with the `stepsPerNotch`
+parameter to the `ClickEncoder` invocation. For reference, my encoder seems to have 30 detents
+per 360 degrees, and 2 steps per click (60 steps for a 360 degree rotation).
 
 ## Software architecture
 
