@@ -222,6 +222,10 @@ CPU is updated in the main loop.
   if (invol == 0 ) buf[0] = ' ';
   else buf[0] = invol;
 
+  //And then, if we clipped on input, overwrite with a *splat* char to try and make
+  // it visually obvious.
+  if (input_peak_clipped) buf[0] = '!';
+
   if (nr_mode != NR_MODE_COMPLETE_BYPASS ) {
     //Filter mode
     switch (current_filter_mode) {

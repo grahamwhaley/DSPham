@@ -45,7 +45,7 @@ AudioRecordQueue Q_in_L; // We only need one channel - we are working with mono 
 AudioPlayQueue Q_out_R;
 //AudioPlayQueue Q_out_L;
 
-AudioAnalyzePeak input_peak_detector, output_peak_detector;
+AudioAnalyzePeak input_peak_detector, output_peak_detector, postfir_peak_detector;
 
 //RMS detection seems to work OK for auto output level matching, but
 // then we don't get 'peak-o-meter' to show input levels...
@@ -76,9 +76,11 @@ AudioConnection          patchCord4(firfilter, 0, Q_in_L, 0);
 AudioConnection          patchCord6(Q_out_R, 0, peak_amp, 0);
 AudioConnection          patchCord7(peak_amp, 0, i2s_out, 0);
 AudioConnection          patchCord8(peak_amp, 0, i2s_out, 1);
+//Wire up the peak detectors
 AudioConnection          patchCord9(input_mixer, 0, input_peak_detector, 0);
-AudioConnection          patchCord10(peak_amp, 0, output_peak_detector, 0);
-AudioConnection          patchCord11(Q_out_R, 0, toneDetect, 0);  //Should we do these after the peak amp?
+AudioConnection          patchCord10(firfilter, 0, postfir_peak_detector, 0);
+AudioConnection          patchCord11(peak_amp, 0, output_peak_detector, 0);
+AudioConnection          patchCord12(Q_out_R, 0, toneDetect, 0);  //Should we do these after the peak amp?
 AudioConnection          patchCord13(Q_out_R, 0, noteFreq, 0);    //Should we do these after the peak amp?
 
 //The FFT might be expensive, and we may not be using it - we should probably put an 'amp switch' before it and
@@ -110,11 +112,15 @@ float32_t FIR_int_state [n_int_states];
 // How much gain to apply to try and match the output 'volume' to the original
 // input volume.
 float32_t peak_gain = 1.0;
-float32_t input_peak = 1.0, output_peak = 1.0;   //Default start as the same
+float32_t input_peak = 1.0, output_peak = 1.0, postfir_peak = 1.0;   //Default start as the same
 float32_t input_peak_acc = 0;
+bool input_peak_clipped = false;
+
 float32_t peak_ratio;
 unsigned long peak_ticktime;
 #define PEAK_MS_UPDATE  100 //Update 10 times a second
+unsigned long peak_clipped_timer;
+#define PEAK_MS_CLIPPED_CLEAR  500 //Hold the input clipped signal on the screen for a bit...
 
 unsigned long display_update_deadline = 0;
 #define DISPLAY_UPDATE_MS 250
@@ -124,7 +130,7 @@ unsigned long tone_update_deadline = 0;
 #define TONE_UPDATE_MS 250
 
 void setup() {
-#ifdef DEBUG
+#if DEBUG
   Serial.begin(115200);
   Serial.println("Starting");
 #endif
@@ -362,13 +368,32 @@ void loop() {
         input_peak = input_peak_detector.read();
         // Take a rolling average of the input peak for the 'peak' display.
         input_peak_acc = (input_peak_acc * 0.9) + input_peak;
+
+        //Did we clip the input?
+        if (input_peak >= 1.0 ) {
+          //Set the clip flag, and set the timout to clear that flag
+          input_peak_clipped = true;
+          peak_clipped_timer = ms + PEAK_MS_CLIPPED_CLEAR;
+        } else {
+          //We didn't clip, but have we timed out in order to clear the flag?
+          if (ms >= peak_clipped_timer)
+            input_peak_clipped = false;
+        }
       }
+
+      if( output_peak_detector.available() )
+        output_peak = output_peak_detector.read();
+
+      if( postfir_peak_detector.available() )
+        postfir_peak = postfir_peak_detector.read();
+
+      //Enable if you need - but we evaluate often, so this generates a lot of output.
+      // You might want to increase the evaluation timeout if you are debugging, and re-enable this print.
+      //if (DEBUG) Serial.printf("Peaks in/fir/out: %f:%f:%f\n", input_peak, postfir_peak, output_peak);
 
       // We only compare and calculate against the output peak if we are
       // in output tracking mode.
       if( (agc_mode == AGC_MODE_TRACK) && (nr_mode != NR_MODE_COMPLETE_BYPASS) ) {
-        if( output_peak_detector.available() )
-          output_peak = output_peak_detector.read();
     
         // How different are the input and output peaks?
         // Hmm, would it be better to use the RMS here, rather than the peak...

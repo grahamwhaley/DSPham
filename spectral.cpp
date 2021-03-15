@@ -208,9 +208,9 @@ void spectral_noise_reduction (void)
   }
 #endif
 
-  // / rate DF SR[SAMPLE_RATE].rate/DF
-  lf_freq /= ((SR[SAMPLE_RATE].rate / DF) / NR_FFT_L); // bin BW is 46.9Hz [12000Hz / 256 bins] @96kHz
-  uf_freq /= ((SR[SAMPLE_RATE].rate / DF) / NR_FFT_L);
+  //Our sample rate is fixed...
+  lf_freq /= (SAMPLE_RATE / DF) / NR_FFT_L;
+  uf_freq /= (SAMPLE_RATE / DF) / NR_FFT_L;
 
   // Frank DD4WH & Michael DL2FW, November 2017
   // NOISE REDUCTION BASED ON SPECTRAL SUBTRACTION

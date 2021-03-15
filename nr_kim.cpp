@@ -5,72 +5,6 @@
 #include "global.h"
 #include "nr_kim.h"
 
-//global #define NR_FFT_L    256
-
-#if 0 //global
-#define SAMPLE_RATE_MIN               6
-#define SAMPLE_RATE_8K                0
-#define SAMPLE_RATE_11K               1
-#define SAMPLE_RATE_16K               2
-#define SAMPLE_RATE_22K               3
-#define SAMPLE_RATE_32K               4
-#define SAMPLE_RATE_44K               5
-#define SAMPLE_RATE_48K               6
-#define SAMPLE_RATE_50K               7
-#define SAMPLE_RATE_88K               8
-#define SAMPLE_RATE_96K               9
-#define SAMPLE_RATE_100K              10
-#define SAMPLE_RATE_101K              11
-#define SAMPLE_RATE_176K              12
-#define SAMPLE_RATE_192K              13
-#define SAMPLE_RATE_234K              14
-#define SAMPLE_RATE_256K              15
-#define SAMPLE_RATE_281K              16 // ??
-#define SAMPLE_RATE_353K              17 // does not work !
-#define SAMPLE_RATE_MAX               15
-
-//uint8_t sr =                     SAMPLE_RATE_96K;
-uint8_t SAMPLE_RATE =            SAMPLE_RATE_44K;
-uint8_t LAST_SAMPLE_RATE =       SAMPLE_RATE_44K;
-
-typedef struct SR_Descriptor
-{
-  const uint8_t SR_n;
-  const uint32_t rate;
-  const char* const text;
-  const char* const f1;
-  const char* const f2;
-  const char* const f3;
-  const char* const f4;
-  const float32_t x_factor;
-  const uint8_t x_offset;
-} SR_Desc;
-
-
-const SR_Descriptor SR [18] =
-{ // x_factor, x_offset and f1 to f4 are NOT USED ANYMORE !!!
-  //   SR_n , rate, text, f1, f2, f3, f4, x_factor = pixels per f1 kHz in spectrum display
-  {  SAMPLE_RATE_8K, 8000,  "  8k", " 1", " 2", " 3", " 4", 64.0, 11}, // not OK
-  {  SAMPLE_RATE_11K, 11025, " 11k", " 1", " 2", " 3", " 4", 43.1, 17}, // not OK
-  {  SAMPLE_RATE_16K, 16000, " 16k",  " 4", " 4", " 8", "12", 64.0, 1}, // OK
-  {  SAMPLE_RATE_22K, 22050, " 22k",  " 5", " 5", "10", "15", 58.05, 6}, // OK
-  {  SAMPLE_RATE_32K, 32000,  " 32k", " 5", " 5", "10", "15", 40.0, 24}, // OK, one more indicator?
-  {  SAMPLE_RATE_44K, 44100,  " 44k", "10", "10", "20", "30", 58.05, 6}, // OK
-  {  SAMPLE_RATE_48K, 48000,  " 48k", "10", "10", "20", "30", 53.33, 11}, // OK
-  {  SAMPLE_RATE_50K, 50223,  " 50k", "10", "10", "20", "30", 53.33, 11}, // NOT OK
-  {  SAMPLE_RATE_88K, 88200,  " 88k", "20", "20", "40", "60", 58.05, 6}, // OK
-  {  SAMPLE_RATE_96K, 96000,  " 96k", "20", "20", "40", "60", 53.33, 12}, // OK
-  {  SAMPLE_RATE_100K, 100000,  "100k", "20", "20", "40", "60", 53.33, 12}, // NOT OK
-  {  SAMPLE_RATE_101K, 100466,  "101k", "20", "20", "40", "60", 53.33, 12}, // NOT OK
-  {  SAMPLE_RATE_176K, 176400,  "176k", "40", "40", "80", "120", 58.05, 6}, // OK
-  {  SAMPLE_RATE_192K, 192000,  "192k", "40", "40", "80", "120", 53.33, 12}, // not OK
-  {  SAMPLE_RATE_234K, 234375,  "234k", "40", "40", "80", "120", 53.33, 12}, // NOT OK
-  {  SAMPLE_RATE_256K, 256000,  "256k", "40", "40", "80", "120", 53.33, 12}, // NOT OK
-  {  SAMPLE_RATE_281K, 281000,  "281k", "40", "40", "80", "120", 53.33, 12}, // NOT OK
-  {  SAMPLE_RATE_353K, 352800,  "353k", "40", "40", "80", "120", 53.33, 12} // NOT OK
-};
-#endif  // global
-
 //global float32_t DMAMEM NR_FFT_buffer [512] __attribute__ ((aligned (4)));
 //global const static arm_cfft_instance_f32 *NR_FFT;
 
@@ -166,9 +100,9 @@ void nr_kim()
   lf_freq = 100;
   uf_freq = 3600;
 
-  // / rate DF SR[SAMPLE_RATE].rate/DF
-  lf_freq /= ((SR[SAMPLE_RATE].rate / DF) / NR_FFT_L); // bin BW is 46.9Hz [12000Hz / 256 bins] @96kHz
-  uf_freq /= ((SR[SAMPLE_RATE].rate / DF) / NR_FFT_L);
+  //Our sample rate is currently fixed - no need to use a lookup table.
+  lf_freq /= (SAMPLE_RATE / DF) / NR_FFT_L;
+  uf_freq /= (SAMPLE_RATE / DF) / NR_FFT_L;
 
   VAD_low = (int)lf_freq;
   VAD_high = (int)uf_freq;
@@ -334,7 +268,7 @@ void nr_kim()
       }
     }
 
-#ifdef DEBUG
+#if DEBUG
     // for debugging
     for (int bindx = 0; bindx < NR_FFT_L / 2; bindx++)
     {
@@ -376,7 +310,7 @@ void nr_kim()
     // NR_G is always positive, however often 0.0
 
     // for debugging
-#ifdef DEBUG
+#if DEBUG
     for (int bindx = 0; bindx < NR_FFT_L / 2; bindx++)
     {
       Serial.print((NR_Gts[bindx][0]), 6);
@@ -405,7 +339,7 @@ void nr_kim()
     //          NR_G_bin_m_1 = NR_Gts[NR_FFT_L / 2 - 1][0];
 
     // for debugging
-#ifdef DEBUG
+#if DEBUG
     for (int bindx = 0; bindx < NR_FFT_L / 2; bindx++)
     {
       Serial.print((NR_G[bindx]), 6);
@@ -425,7 +359,7 @@ void nr_kim()
     }
 
     // DEBUG
-#ifdef DEBUG
+#if DEBUG
     for (int bindx = 20; bindx < 21; bindx++)
     {
       Serial.println("************************************************");

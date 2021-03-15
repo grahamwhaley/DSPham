@@ -125,28 +125,38 @@ void updateFilter() {
   int ncoeff = filterList[current_filter_mode].coeff;
   float32_t centref = (filterList[current_filter_mode].freqLow + filterList[current_filter_mode].freqHigh) / 2.0;
   const float32_t maxgain = 2.0;
-  float32_t gain;
+  float32_t gain, multiplier;
   
   audioFilter(fir_active1,
     ncoeff,
     filterList[current_filter_mode].filterType,
     filterList[current_filter_mode].window,
     filterList[current_filter_mode].freqLow,
-    filterList[current_filter_mode].freqHigh );
+    filterList[current_filter_mode].freqHigh);
 
-  gain = getFilterGain(fir_active1, ncoeff, centref, SAMPLE_RATE/(uint32_t)DF);
+  //Don't forget - the FIR filters happen before decimation, so are at the full sample rate...
+  gain = getFilterGain(fir_active1, ncoeff, centref, SAMPLE_RATE);
 
-  //For CW filters at least, we get a tiny gain - requiring a multiplication factor of
-  // ~167 in some cases for instance - and this seems to make the FIR filter then just generate
-  // hiss and noise, even when fed no signal.
-  // Thus, try limiting the max 'gain' to something 'sensible'. Well, OK, I'd like it so we never
+  if (DEBUG) Serial.printf("FIR default gain measured as %f\n", gain);
+
+  // Try limiting the max 'gain' to something 'sensible'. Well, OK, I'd like it so we never
   // need to apply any gain to the FIR coefficients in the first place, but that is not what we seem
   // to get from the FIR dynamic calculators.
-  if (1.0/gain > maxgain) gain = 1.0/maxgain;
+  if (1.0/gain > maxgain){
+    if (DEBUG) Serial.println("Clipping FIR gain");
+    multiplier = maxgain;
+  } else {
+    multiplier = 1.0/gain;
+  }
 
+  //Scale the multiplier down to 90%, so we avoid any risk of clipping
+  multiplier *= 0.9;
+
+  if (DEBUG) Serial.printf("FIR multiplier set to %f\n", multiplier);
+  
   //And scale it so we try not to be at 100% for a pure signal, to try and avoid
   // any potential clipping (unlikely it is that we will ever end up in that situation).
-  normaliseCoeffs(fir_active1, ncoeff, 0.9/gain);
+  normaliseCoeffs(fir_active1, ncoeff, multiplier);
 
   firfilter.begin(fir_active1, ncoeff);
 

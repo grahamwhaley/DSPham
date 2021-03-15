@@ -275,41 +275,42 @@ void bandstop(short h[], const int &N, const int &WINDOW, const double &fc1, con
 
 //---------------------------------------------------------------
 void audioFilter(short h[], const int &N, const int &TYPE, const int &WINDOW, const double &fc1, const double &fc2) {
+  
   switch (TYPE) {
       case ID_LOWPASS:
-                  #ifdef DEBUG
+                  #if DEBUG
                       Serial.print("LowPass Freq:");
                       Serial.println(fc1);
                   #endif
-                  lowpass(h, N, WINDOW, fc1/44117);
+                  lowpass(h, N, WINDOW, fc1/AUDIO_SAMPLE_RATE_EXACT);
                   break;
       case ID_HIGHPASS:
-                  #ifdef DEBUG
+                  #if DEBUG
                       Serial.print("HiPass Freq:");
                       Serial.println(fc1);
                   #endif
-                  highpass(h, N, WINDOW, fc1/44117);
+                  highpass(h, N, WINDOW, fc1/AUDIO_SAMPLE_RATE_EXACT);
                   break;
       case ID_BANDPASS:
-                  #ifdef DEBUG
+                  #if DEBUG
                       Serial.print("BandPass LFreq:");
                       Serial.print(fc1);
                       Serial.print(" HFreq:");
                       Serial.println(fc2);
                   #endif
-                  bandpass(h, N, WINDOW, fc1/44117, fc2/44117);
+                  bandpass(h, N, WINDOW, fc1/AUDIO_SAMPLE_RATE_EXACT, fc2/AUDIO_SAMPLE_RATE_EXACT);
                   break;
       case ID_BANDSTOP:
-                  #ifdef DEBUG
+                  #if DEBUG
                       Serial.print("Bandstop LFreq:");
                       Serial.print(fc1);
                       Serial.print(" HFreq:");
                       Serial.println(fc2);
                   #endif
-                  bandstop(h, N, WINDOW, fc1/44117, fc2/44117);
+                  bandstop(h, N, WINDOW, fc1/AUDIO_SAMPLE_RATE_EXACT, fc2/AUDIO_SAMPLE_RATE_EXACT);
                   break;
       default:
-                  #ifdef DEBUG
+                  #if DEBUG
                       Serial.println("Unknown");    
                   #endif
                   break;
@@ -329,15 +330,19 @@ float32_t getFilterGain(int16_t *coeffs, int ncoeffs, float32_t frequency, float
   float32_t gain = 0.0;
   float32_t f = frequency / samplerate;
 
+  if (DEBUG) Serial.printf("getFilterGain(ncoeff: %d, f:%f, rate:%f\n", ncoeffs, frequency, samplerate);
+
   for(int i=0; i<ncoeffs; i++ ) {
     float32_t c = cos(2.0 * M_PI * f * i);
     float32_t s = sin(2.0 * M_PI * f * i);
 
-    cgain += ((float32_t)coeffs[i]/32768.0) * c;
-    sgain += ((float32_t)coeffs[i]/32768.0) * s;
+    cgain += (((float32_t)coeffs[i])/32768.0) * c;
+    sgain += (((float32_t)coeffs[i])/32768.0) * s;
   }
 
   gain = (cgain*cgain) + (sgain*sgain);
+
+  if (DEBUG) Serial.printf(" Gain: %fhz, %f sample: %f gain\n", frequency, samplerate, sqrt(gain));
 
   //FIXME - we probably should limit the gain returned somewhere - possibly here.
   return (sqrt(gain));
