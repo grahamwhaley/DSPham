@@ -4,7 +4,7 @@
 #include <arm_math.h>
 
 #define VERSION_MAJOR 1
-#define VERSION_MINOR 1
+#define VERSION_MINOR 2
 
 #define VERSION_UINT16 ((uint16_t)((VERSION_MAJOR<<8)|VERSION_MINOR))
 
@@ -16,8 +16,12 @@
 #define VERSION_STRING STR(VERSION_MAJOR) "." STR(VERSION_MINOR)
 
 //#define DEBUG 1 //Enable to get serial port output
+#define DEBUG 0 //No debug output
 
 #define BUFFER_SIZE 128
+
+//this is the raw hardware rate, before decimation
+#define SAMPLE_RATE ((float32_t)AUDIO_SAMPLE_RATE_EXACT)
 
 // Decimate down to 11kHz - see if that helps the NR systems perform, as they will then not be trying
 // to operate on the 5-20kHz data, which we never listen to anyway!
@@ -59,45 +63,6 @@ extern float32_t DMAMEM NR_FFT_buffer [512] __attribute__ ((aligned (4)));
 extern float32_t NR_alpha;
 extern float32_t DMAMEM NR_last_iFFT_result [NR_FFT_L / 2];
 extern float32_t DMAMEM NR_Gts[NR_FFT_L / 2][2]; // time smoothed gain factors (current and last) for each of the 128 bins
-
-#define SAMPLE_RATE_MIN               6
-#define SAMPLE_RATE_8K                0
-#define SAMPLE_RATE_11K               1
-#define SAMPLE_RATE_16K               2
-#define SAMPLE_RATE_22K               3
-#define SAMPLE_RATE_32K               4
-#define SAMPLE_RATE_44K               5
-#define SAMPLE_RATE_48K               6
-#define SAMPLE_RATE_50K               7
-#define SAMPLE_RATE_88K               8
-#define SAMPLE_RATE_96K               9
-#define SAMPLE_RATE_100K              10
-#define SAMPLE_RATE_101K              11
-#define SAMPLE_RATE_176K              12
-#define SAMPLE_RATE_192K              13
-#define SAMPLE_RATE_234K              14
-#define SAMPLE_RATE_256K              15
-#define SAMPLE_RATE_281K              16 // ??
-#define SAMPLE_RATE_353K              17 // does not work !
-#define SAMPLE_RATE_MAX               15
-
-extern uint8_t SAMPLE_RATE;
-extern uint8_t LAST_SAMPLE_RATE;
-
-typedef struct SR_Descriptor
-{
-  const uint8_t SR_n;
-  const uint32_t rate;
-  const char* const text;
-  const char* const f1;
-  const char* const f2;
-  const char* const f3;
-  const char* const f4;
-  const float32_t x_factor;
-  const uint8_t x_offset;
-} SR_Desc;
-
-extern const SR_Descriptor SR [18];
 
 // global decoder stuff
 #define DECODER_OFF 0
@@ -146,6 +111,7 @@ extern float32_t agc_sg5k_decay;
 
 // From the main loop
 extern float32_t input_peak_acc;
+extern bool input_peak_clipped;
 
 //Display our output (or, is the menu active...)
 extern bool display;

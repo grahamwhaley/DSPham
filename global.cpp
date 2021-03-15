@@ -24,32 +24,6 @@ float32_t NR_alpha = 0.95; // default 0.99 --> range 0.98 - 0.9999; 0.95 acts mu
 float32_t DMAMEM NR_last_iFFT_result [NR_FFT_L / 2];
 float32_t DMAMEM NR_Gts[NR_FFT_L / 2][2]; // time smoothed gain factors (current and last) for each of the 128 bins
 
-uint8_t SAMPLE_RATE =            SAMPLE_RATE_44K;
-uint8_t LAST_SAMPLE_RATE =       SAMPLE_RATE_44K;
-
-const SR_Descriptor SR [18] =
-{ // x_factor, x_offset and f1 to f4 are NOT USED ANYMORE !!!
-  //   SR_n , rate, text, f1, f2, f3, f4, x_factor = pixels per f1 kHz in spectrum display
-  {  SAMPLE_RATE_8K, 8000,  "  8k", " 1", " 2", " 3", " 4", 64.0, 11}, // not OK
-  {  SAMPLE_RATE_11K, 11025, " 11k", " 1", " 2", " 3", " 4", 43.1, 17}, // not OK
-  {  SAMPLE_RATE_16K, 16000, " 16k",  " 4", " 4", " 8", "12", 64.0, 1}, // OK
-  {  SAMPLE_RATE_22K, 22050, " 22k",  " 5", " 5", "10", "15", 58.05, 6}, // OK
-  {  SAMPLE_RATE_32K, 32000,  " 32k", " 5", " 5", "10", "15", 40.0, 24}, // OK, one more indicator?
-  {  SAMPLE_RATE_44K, 44100,  " 44k", "10", "10", "20", "30", 58.05, 6}, // OK
-  {  SAMPLE_RATE_48K, 48000,  " 48k", "10", "10", "20", "30", 53.33, 11}, // OK
-  {  SAMPLE_RATE_50K, 50223,  " 50k", "10", "10", "20", "30", 53.33, 11}, // NOT OK
-  {  SAMPLE_RATE_88K, 88200,  " 88k", "20", "20", "40", "60", 58.05, 6}, // OK
-  {  SAMPLE_RATE_96K, 96000,  " 96k", "20", "20", "40", "60", 53.33, 12}, // OK
-  {  SAMPLE_RATE_100K, 100000,  "100k", "20", "20", "40", "60", 53.33, 12}, // NOT OK
-  {  SAMPLE_RATE_101K, 100466,  "101k", "20", "20", "40", "60", 53.33, 12}, // NOT OK
-  {  SAMPLE_RATE_176K, 176400,  "176k", "40", "40", "80", "120", 58.05, 6}, // OK
-  {  SAMPLE_RATE_192K, 192000,  "192k", "40", "40", "80", "120", 53.33, 12}, // not OK
-  {  SAMPLE_RATE_234K, 234375,  "234k", "40", "40", "80", "120", 53.33, 12}, // NOT OK
-  {  SAMPLE_RATE_256K, 256000,  "256k", "40", "40", "80", "120", 53.33, 12}, // NOT OK
-  {  SAMPLE_RATE_281K, 281000,  "281k", "40", "40", "80", "120", 53.33, 12}, // NOT OK
-  {  SAMPLE_RATE_353K, 352800,  "353k", "40", "40", "80", "120", 53.33, 12} // NOT OK
-};
-
 int nr_mode = NR_MODE_SPECTRAL;
 
 // Is the menu active, or should we 'display' our status and decoder output etc.
