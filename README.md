@@ -208,7 +208,7 @@ with some defaults:
 - 2: OFF - Everything off (no processing).
 - 3: SG5K - Everything off apart from hardware SG5k AGC.
 - 4: SSB - Medium band SSB filter, notch and nb on, spectral NR.
-- 5: CW - Narrow band CW filter, notch off, nb on. No NR. K4ICY cw decoder.
+- 5: CW - Narrow band CW filter, notch off, nb on. No NR. [K4ICY][7] cw decoder.
 
 All eeprom slots can be edited, modified and saved. The defaults can be restored if necessary,
 on either a slot by slot or full system basis.
@@ -234,9 +234,9 @@ The following features are in the current code:
     - FM
     - AM
   - A selection of CW decoders
-    - GI1MIC/WB7FHC 'morseduino' decoder
-    - K4ICY using geometric mean for pulse categorisation
-    - TF3LJ Bayesian based decoder
+    - [GI1MIC/WB7FHC][4] 'morseduino' decoder
+    - [K4ICY][7] using geometric mean for pulse categorisation
+    - [TF3LJ][8] Bayesian based decoder
   - Hardware AGC or software volume tracking (note, this is *not* a full AGC, yet).
   - Ability to bypass all features (to aid comparison)
   - 2x16 LCD display for status, settings and morse decode
@@ -246,6 +246,7 @@ The following features are in the current code:
   - 11 user configurable setting memories, 6 pre-loaded with defaults
   - menu driven configuration via rotary click encoder
   - Quick mode/setting selection through rotary encoder
+  - Input level indicator, with input clipping warning.
 
 ## Building and Development
 
@@ -301,12 +302,14 @@ Github issues.
 
 ## Version History
 
-This section details the version 'releases', and what changed.
+This section details the version 'releases', and what changed. Releases can be found on
+the [Release page][22].
 
 | Version | Date       | Changes |
 | ------- | ---------- | ------- |
-| v1.0    | 2020-02-10 | Initial release |
-| v1.1    | 2020-02-16 | Normalise FIRs. Decimate audio x4 |
+| v1.0    | 2021-02-10 | Initial release |
+| v1.1    | 2021-02-16 | Normalise FIRs. Decimate audio x4 |
+| v1.2    | 2021-03-16 | Fix FIR normalise bug. Add input clip indicator |
 
 ## Samples
 
