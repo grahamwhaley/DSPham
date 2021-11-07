@@ -430,7 +430,7 @@ void k4icy_keyUp()
 /// Secret Decoder Ring ///////////////////////////////////
 void morseDecode()
 {                               //  Here, we check the collected elements against our list to decode for the matching character
-  decodeChar = '?';             //Unkown char. (changed from 0x7 special char in original code, as we already use that)
+  decodeChar = 0xff;             //Unkown char. (changed from 0x7 special char in original code, as we already use that) 0xff is a solid 'block' on 2x16 charset
   decodeProSign = "";
 
   //Serial.println(elementSequence);
