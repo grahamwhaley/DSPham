@@ -581,7 +581,9 @@ void morseDecode()
   if (strcmp(elementSequence, "-.-.-.") == 0) {
     decodeChar = 59;
   }                             // ;
-  //if (strcmp(elementSequence,"-...-") == 0)   { decodeChar = 61; }  // = (Pause, BT)
+  if (strcmp(elementSequence,"-...-") == 0) {
+    decodeChar = 61;
+  }                             // = (Pause, BT)
   if (strcmp(elementSequence, "..--..") == 0) {
     decodeChar = 63;
   }                             // ?
