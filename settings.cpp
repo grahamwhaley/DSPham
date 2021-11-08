@@ -334,7 +334,6 @@ void load_specific_settings(uint8_t slot) {
 void saveSetting(int slot) {
   struct settings *s = &live_settings.slots[slot];
   int eeoffset;
-  char name[4];
 
   //Just blindly copy the whole slot to the eeprom - initialised or not..  
   s->filter.lowfreq = filterList[current_filter_mode].freqLow;
@@ -362,6 +361,9 @@ void saveSetting(int slot) {
   
   s->decoder.decoder_mode = decoder_mode;
 
+  //The name field should already be filled out correctly from either loading the defaults
+  //or from a previous call to setSettingsName()
+
   eeoffset = offsetof(eedata, slots);
   eeoffset += sizeof(struct settings) * slot; //user data at front of eeprom. Slots indexed from 0
 
@@ -378,7 +380,7 @@ void saveSetting(int slot) {
 void getSettingsName(int slot, char *cp) {
   char *p = live_settings.slots[slot].name;
     
-  for (int i=0; i<4; i++) cp[i] = p[i];
+  for (int i=0; i<SETTING_NAME_LENGTH; i++) cp[i] = p[i];
 }
 
 //Set the name in the live settings, but do not write it to the eeprom
@@ -387,10 +389,8 @@ void setSettingsName(int slot, char *cp) {
   struct settings *s = &live_settings.slots[slot];  
 
   //Set the name in the live data
-  live_settings.slots[slot].name[0] = cp[0];
-  live_settings.slots[slot].name[1] = cp[1];
-  live_settings.slots[slot].name[2] = cp[2];
-  live_settings.slots[slot].name[3] = cp[3];
+  for (int i=0; i<SETTING_NAME_LENGTH; i++)
+    live_settings.slots[slot].name[i] = cp[i];
 }
 
 void init_settings(void) {
