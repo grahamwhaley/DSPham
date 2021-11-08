@@ -432,24 +432,31 @@ void loop() {
           float32_t freq = noteFreq.read();
           int freqdiff = (int)freq - morse_frequency;
 
-          if ( abs(freqdiff) < morse_frequency/10 ) {
-            //Tone pretty close
-            lcd.createChar(7, morsechar2);  //'><'
-          } else {
-            if (freqdiff < 0 ) {
-              //Tone too low
-              if (freqdiff < -(morse_frequency/2) ) {
-                lcd.createChar(7, morsechar0);  //'<<'
-              } else {
-                lcd.createChar(7, morsechar1);  //'<'
-              }
+          //Accessing lcd.createChar() changes the internal address counter (AC) of the
+          //lcd module, which then changes the cursor position (if active), which can mess
+          //up the menu display. If we are in the menu system, do not access the lcd, at all.
+          if (display) {
+            //We could be more efficient and access the lcd interface less if we cache the last
+            //state we were in and only update when it changes.
+            if ( abs(freqdiff) < morse_frequency/10 ) {
+              //Tone pretty close
+              lcd.createChar(7, morsechar2);  //'><'
             } else {
-              //Tone too high
-              if (freqdiff > morse_frequency/2 ) {
-                lcd.createChar(7, morsechar3);  //'>>'
+              if (freqdiff < 0 ) {
+                //Tone too low
+                if (freqdiff < -(morse_frequency/2) ) {
+                  lcd.createChar(7, morsechar0);  //'<<'
+                } else {
+                  lcd.createChar(7, morsechar1);  //'<'
+                }
               } else {
-                lcd.createChar(7, morsechar4);  //'>'
-              }         
+                //Tone too high
+                if (freqdiff > morse_frequency/2 ) {
+                  lcd.createChar(7, morsechar3);  //'>>'
+                } else {
+                  lcd.createChar(7, morsechar4);  //'>'
+                }
+              }
             }
           }
           //Char is printed in the global lcd update routine
