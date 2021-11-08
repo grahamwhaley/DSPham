@@ -41,9 +41,11 @@ struct decoder_settings {
 	uint8_t decoder_mode;	//off or which?
 };
 
-	
+
+#define SETTING_NAME_LENGTH	4
+
 struct settings {
-  char name[4];
+	char name[SETTING_NAME_LENGTH];
 	struct filter_settings filter;
 	struct nb_settings nb;
 	struct autonotch_settings autonotch;
