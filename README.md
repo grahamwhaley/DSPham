@@ -310,6 +310,7 @@ the [Release page][22].
 | v1.0    | 2021-02-10 | Initial release |
 | v1.1    | 2021-02-16 | Normalise FIRs. Decimate audio x4 |
 | v1.2    | 2021-03-16 | Fix FIR normalise bug. Add input clip indicator |
+| v1.3    | 2021-11-08 | CW decode enhance. Menu name slot edit enhance |
 
 ## Samples
 
