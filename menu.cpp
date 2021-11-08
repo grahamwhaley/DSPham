@@ -260,7 +260,7 @@ MENU(VolumeMenu, "Volume", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
 
 int active_settings_slot = 0;
 //Only allow nums and lower case to reduce scrolling/choice
-char* constMEM alphaNum MEMMODE="0123456789abcdefghijklmnopqrstuvwxyz";
+char* constMEM alphaNum MEMMODE="0123456789abcdefghijklmnopqrstuvwxyz ";
 char* constMEM alphaNumMask[] MEMMODE={alphaNum};
 char active_slot_name[]="0123";   //Name of the currently selected editing slot
 
