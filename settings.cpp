@@ -374,7 +374,6 @@ void saveSetting(int slot) {
   //Keep the led on a little as a 'did the write' indicator
   delay(250);
   morseLed(false);
-
 }
 
 void getSettingsName(int slot, char *cp) {
@@ -386,11 +385,10 @@ void getSettingsName(int slot, char *cp) {
 //Set the name in the live settings, but do not write it to the eeprom
 // that is done with the global 'save slot' call.
 void setSettingsName(int slot, char *cp) {
-  struct settings *s = &live_settings.slots[slot];  
+  char *p = live_settings.slots[slot].name;
 
   //Set the name in the live data
-  for (int i=0; i<SETTING_NAME_LENGTH; i++)
-    live_settings.slots[slot].name[i] = cp[i];
+  for (int i=0; i<SETTING_NAME_LENGTH; i++) p[i] = cp[i];
 }
 
 void init_settings(void) {
