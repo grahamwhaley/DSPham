@@ -519,7 +519,7 @@ void set_default_slot(uint8_t slot) {
 void set_nr_mode(uint8_t mode) {
 
   //If not valid, just leave as is.
-  if (mode >= NR_MODE_MAX) return;
+  if (mode > NR_MODE_MAX) return;
 
   nr_mode = mode;
 
