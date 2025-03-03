@@ -254,6 +254,8 @@ The project is built using the Arduino IDE with the [Teensyduino addon][12]. To 
 having to build the project from source, Pre-built binaries are provided in the
 [GitHub Releases][22], which can be burnt into the Teensy 4.0 using the [Teensy Loader][21].
 
+For more detailed information see the [Extended Documentation](#extended-documentation) section.
+
 In order to build the project from sources, you will need a few extra libraries and to configure
 your Teensy 4.0 board correctly:
 
@@ -299,6 +301,13 @@ dismissed. No point duplicating work.
 
 All submissions should come via Github pull requests. Requests, bugs etc. should be reported via
 Github issues.
+
+## Extended Documentation
+
+[@W7STF](https://github.com/W7STF) has done an excellent job building a DSPham and documenting many
+items in more detail and adding useful information that is not necessarily documented elsewhere on
+this repository. If you are contemplating building a DSPham it is definitely worthwhile you reading
+[the W7STF extended document](documentation/DSPham_Notes_R2.pdf).
 
 ## Version History
 
